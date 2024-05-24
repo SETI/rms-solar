@@ -4,12 +4,12 @@
 
 import numpy as np
 
-import solar.stis  as stis
+import solar.stis as stis
 import solar.rieke as rieke
 
 import tabulation as tab
 
-assert stis.UNITS  == rieke.UNITS
+assert stis.UNITS == rieke.UNITS
 assert stis.XUNITS == rieke.XUNITS
 
 tab1 = stis.FLUX_DENSITY
