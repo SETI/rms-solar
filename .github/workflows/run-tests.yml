@@ -12,7 +12,7 @@ on:
 
 jobs:
   flake8:
-    name: Flake8 module
+    name: Flake8 solar
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,7 +26,7 @@ jobs:
           flake8 solar tests
 
   test:
-    name: Test module
+    name: Test solar
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
