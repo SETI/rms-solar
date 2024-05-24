@@ -188,6 +188,10 @@ def bandpass_flux_density(bandpass, model='STIS_Rieke', *, units='W/m^2/um',
     """
     Compute the average solar flux density over a filter bandpass.
 
+    Note: If the bandpass of the filter is wider than the wavelength coverage
+          of the selected solar model, the computation will be restricted to the
+          wavelength range that is in common between the filter and the model.
+
     Args:
         bandpass (Tabulation or tuple): The Tabulation of the filter bandpass,
             with wavelength in units specified by `xunits` (if `model` is a
@@ -239,6 +243,10 @@ def mean_flux_density(center, width, model='STIS_Rieke', *, units='W/m^2/um',
     """
     Compute average solar flux density over the bandpass of a "boxcar" filter.
 
+    Note: If the bandpass of the filter is wider than the wavelength coverage
+          of the selected solar model, the computation will be restricted to the
+          wavelength range that is in common between the filter and the model.
+
     Args:
         center (float): The center of the bandpass (microns).
         width (float): The full width of the bandpass (microns).
@@ -275,6 +283,10 @@ def bandpass_f(bandpass, model='STIS_Rieke', *, units='W/m^2/um', xunits='um',
     """
     Compute the solar F averaged over a filter bandpass.
 
+    Note: If the bandpass of the filter is wider than the wavelength coverage
+          of the selected solar model, the computation will be restricted to the
+          wavelength range that is in common between the filter and the model.
+
     Args:
         bandpass (Tabulation or tuple): The Tabulation of the filter bandpass,
             with wavelength in units specified by `xunits` (if `model` is a
@@ -307,6 +319,10 @@ def mean_f(center, width, model='STIS_Rieke', *, units='W/m^2/um', xunits='um',
            sun_range=1.):
     """
     Compute average solar F over the bandpass of a "boxcar" filter.
+
+    Note: If the bandpass of the filter is wider than the wavelength coverage
+          of the selected solar model, the computation will be restricted to the
+          wavelength range that is in common between the filter and the model.
 
     Args:
         center (float): The center of the bandpass (microns).
