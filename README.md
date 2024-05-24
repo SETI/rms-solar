@@ -21,9 +21,53 @@
 [![Number of GitHub stars](https://img.shields.io/github/stars/SETI/rms-solar)](https://github.com/SETI/rms-solar/stargazers)
 ![GitHub forks](https://img.shields.io/github/forks/SETI/rms-solar)
 
-# rms-solar
+# Introduction
 
-Supported versions: Python >= 3.8
+`solar` is a Python module that provides solar flux density from a variety of
+models. These models are currently supported:
 
-# PDS Ring-Moon Systems Node, SETI Institute
-# solar Library
+| Name       | Wavelength range (microns) |
+| ---------- | -------------------------- |
+| Colina     | 0.1195 to 2.5              |
+| Kurucz     | 0.15 to 300                |
+| Rieke      | 0.2 to 30                  |
+| STIS       | 0.1195 to 2.7              |
+| STIS_Rieke | 0.1195 to 30               |
+
+`solar` is a product of the [PDS Ring-Moon Systems Node](https://pds-rings.seti.org).
+
+# Installation
+
+The `solar` module is available via the `rms-solar` package on PyPI and can be
+installed with:
+
+    pip install rms-solar
+
+# Getting Started
+
+The `solar` module provides five methods:
+
+- `flux_density`: Compute the flux density of a solar model in the specified units.
+- `bandpass_flux_density`: Compute the average solar flux density over a filter bandpass.
+- `mean_flux_density`: Compute average solar flux density over the bandpass of a "boxcar" filter.
+- `bandpass_f`: Compute the solar F averaged over a filter bandpass.
+- `mean_f`: Compute average solar F over the bandpass of a "boxcar" filter.
+
+These functions take or return `Tabulation` objects. For more information on `Tabulation`
+objects see the [`rms-tabulation`](https://github.com/SETI/rms-tabulation) package.
+
+# Contributing
+
+Information on contributing to this package can be found in the
+[Contributing Guide](https://github.com/SETI/rms-solar/blob/main/CONTRIBUTING.md)
+
+# Links
+
+- [Documentation](https://rms-solar.readthedocs.io)
+- [Repository](https://github.com/SETI/rms-solar)
+- [Issue tracker](https://github.com/SETI/rms-solar/issues)
+- [PyPi](https://pypi.org/project/rms-solar)
+
+# Licensing
+
+This code is licensed under the [Apache License v2.0](https://github.com/SETI/rms-solar/blob/main/LICENSE).

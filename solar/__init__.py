@@ -4,17 +4,18 @@ Models for solar flux density at a given distance from the Sun.
 This module provides access to various models of solar flux density. Models
 currently supported are:
 
-  Colina      0.1195 to 2.5 micron
-  Kurucz      0.15   to 300 micron
-  Rieke       0.2    to 30  micron
-  STIS        0.1195 to 2.7 micron
-  STIS_Rieke  0.1195 to 30  micron
+- Colina      (0.1195 to 2.5 micron)
+- Kurucz      (0.15   to 300 micron)
+- Rieke       (0.2    to 30  micron)
+- STIS        (0.1195 to 2.7 micron)
+- STIS_Rieke  (0.1195 to 30  micron)
 
 The solar flux density can be returned directly in the form of a Tabulation
-object (see the package rms-tabulation) or the mean flux density can be returned
-over a particular filter bandwith. In each case you can specify the model to
-use, the units for wavelength and flux density, the distance from the Sun, and
-whether or not to return just F instead of flux density.
+object (see the package `rms-tabulation <https://pypi.org/project/rms-tabulation>`_
+or the mean flux density can be returned over a particular filter bandwith. In
+each case you can specify the model to use, the units for wavelength and flux
+density, the distance from the Sun, and whether or not to return just F instead
+of flux density.
 """
 
 # When a user does a wildcard import (from solar import *), don't import any
