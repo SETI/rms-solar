@@ -56,10 +56,24 @@ The `solar` module provides five methods:
 These functions take or return `Tabulation` objects. For more information on `Tabulation`
 objects see the [`rms-tabulation`](https://github.com/SETI/rms-tabulation) package.
 
+Details of each function are available in the [module documentation](https://rms-solar.readthedocs.io/en/latest/module.html).
+
+Here is an example that plots the solar flux density for the visual range of 400
+to 700 nm using the Rieke model at 2 AU in units of nm for wavelength and
+W/m^2/nm for flux:
+
+    import matplotlib.pyplot as plt
+    import solar
+
+    flux = solar.flux_density(model='rieke', xunits='nm', units='W/m^2/nm', solar_range=2)
+    flux = flux.clip(400, 700)
+    plt.plot(flux.x, flux.y)
+    plt.show()
+
 # Contributing
 
 Information on contributing to this package can be found in the
-[Contributing Guide](https://github.com/SETI/rms-solar/blob/main/CONTRIBUTING.md)
+[Contributing Guide](https://github.com/SETI/rms-solar/blob/main/CONTRIBUTING.md).
 
 # Links
 
