@@ -38,6 +38,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/SETI/rms-solar"
+Documentation = "https://rms-solar.readthedocs.io/en/latest"
 Repository = "https://github.com/SETI/rms-solar"
 Source = "https://github.com/SETI/rms-solar"
 Issues = "https://github.com/SETI/rms-solar/issues"
