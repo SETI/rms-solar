@@ -1,15 +1,29 @@
-################################################################################
-# solar/__init__.py: Models for the solar flux density at 1 AU.
-#
-# Models currently supported are:
-#   Colina      0.1195 to 2.5 micron
-#   Kurucz      0.15   to 300 micron
-#   Rieke       0.2    to 30  micron
-#   STIS        0.1195 to 2.7 micron
-#   STIS_Rieke  0.1195 to 30  micron
-################################################################################
+"""
+Models for solar flux density at a given distance from the Sun.
 
-__all__ = []    # don't import any solar models by default, only as requested.
+This module provides access to various models of solar flux density. Models
+currently supported are:
+
+- Colina      (0.1195 to 2.5 micron)
+- Kurucz      (0.15   to 300 micron)
+- Rieke       (0.2    to 30  micron)
+- STIS        (0.1195 to 2.7 micron)
+- STIS_Rieke  (0.1195 to 30  micron)
+
+The solar flux density can be returned directly in the form of a Tabulation
+object (see the package `rms-tabulation <https://pypi.org/project/rms-tabulation>`_
+or the mean flux density can be returned over a particular filter bandwith. In
+each case you can specify the model to use, the units for wavelength and flux
+density, the distance from the Sun, and whether or not to return just F instead
+of flux density.
+"""
+
+# When a user does a wildcard import (from solar import *), don't import any
+# solar models by default; but DO export the public interface functions and
+# variables.
+__all__ = ['flux_density', 'bandpass_flux_density', 'mean_flux_density',
+           'bandpass_f', 'mean_f', 'AU', 'C', 'TO_CGS', 'TO_PER_ANGSTROM',
+           'TO_PER_NM']
 
 import functools
 import importlib
@@ -18,13 +32,14 @@ import tabulation as tab
 
 try:
     from ._version import __version__
-except ImportError as err:
+except ImportError:
     __version__ = 'Version unspecified'
 
 
 # Class constants to be used externally as needed
-AU = 149597870.7    # km
-C = 299792.458      # km/sec
+AU = 149597870.7       # km
+C = 299792.458         # km/sec
+C_IN_UM_HZ = C * 1.e9  # um/sec
 
 # Converts from W/m^2 to erg/s/cm^2
 TO_CGS = 1.e7 / 1.e4
@@ -60,46 +75,50 @@ XUNIT_DICT = {
     'Hz': (1.  , False),
 }
 
-C_IN_UM_HZ = C * 1.e9
 
 #===============================================================================
 @functools.lru_cache(maxsize=4)
-def flux_density(model='STIS_Rieke', units='W/m^2/um', xunits='um',
+def flux_density(model='STIS_Rieke', *, units='W/m^2/um', xunits='um',
                  sun_range=1., solar_f=False):
-    """A Tabulation of solar flux density at 1 AU in the specified units.
+    """
+    Compute the flux density of a solar model in the specified units.
 
-    Note that the tabulation is always returned in units of microns.
+    Args:
+        model (str, optional): Name of the model.
+        units (str, optional): Units for the flux.
+            Options are: "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
+            "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz", "erg/s/cm^2/Hz", "Jy",
+            or "uJy". "u" represents "mu" meaning micro.
+        xunits (str, optional): Units for the x-axis.
+            Options are: "um", "nm", "A", or "Hz". "u" represents "mu"
+            meaning micro.
+        sun_range (float, optional): Distance from Sun to target in AU.
+        solar_f (bool, optional): True to divide by pi, providing solar F
+            instead of solar flux density.
 
-    Input:
-        model           name of the model, default "STIS_Rieke".
-        units           units to provide, default "W/m^2/um". Options are:
-                        "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
-                        "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz",
-                        "erg/s/cm^2/Hz", "Jy", "uJy".
-        xunits          units for the x-axis, default "um" (for microns).
-                        Options are: "um", "nm", "A", or "Hz".
-        sun_range       optional distance from Sun to target in AU.
-        solar_f         True to divide by pi, providing solar F instead of
-                        solar flux density.
-
-    Return:             a Tabulation of the model solar flux density in the
-                        specified units.
+    Returns:
+        Tabulation: The model solar flux density in the specified units.
     """
 
     # Each reference to a named model triggers the import of its associated
     # Python file hosts/solar/<name>.py, referenced as "solar.<name>"
     # here. Note that modules are imported only if requested, not by default.
     try:
-        module = importlib.import_module('solar.' + model.lower())
+        module = importlib.import_module(f'solar.{model.lower()}')
     except ImportError:
-        raise ValueError('undefined solar model: ' + model)
+        raise ValueError(f'undefined solar model: {model} (valid models are: '
+                         'colina, kurucz, rieke, stis_rieke, stis)')
 
     # Check units
     if units not in UNIT_DICT:
-        raise ValueError('invalid units: ' + units)
+        valid_units = ', '.join(UNIT_DICT.keys())
+        raise ValueError(f'invalid units: {units} (valid units are: '
+                         f'{valid_units})')
 
     if xunits not in XUNIT_DICT:
-        raise ValueError('invalid units: ' + xunits)
+        valid_xunits = ', '.join(XUNIT_DICT.keys())
+        raise ValueError(f'invalid units: {xunits} (valid units are: '
+                         f'{valid_xunits})')
 
     # Get the tabulation
     tabulation = module.FLUX_DENSITY
@@ -149,8 +168,7 @@ def flux_density(model='STIS_Rieke', units='W/m^2/um', xunits='um',
             if model_x_is_wavelength:  # pragma: no cover
                 new_y = ((factor * C_IN_UM_HZ * model_xscale**2) *
                          tabulation.y / tabulation.x**2)
-            else:  # pragma: no cover
-                # There are currently no models in Hz
+            else:  # pragma: no cover - There are currently no models in Hz
                 new_y = ((factor / C_IN_UM_HZ / model_xscale**2) *
                          tabulation.y * tabulation.x**2)
 
@@ -158,39 +176,46 @@ def flux_density(model='STIS_Rieke', units='W/m^2/um', xunits='um',
             if model_x_is_wavelength:  # pragma: no cover
                 new_y = ((factor / C_IN_UM_HZ / model_xscale**2) *
                          tabulation.y * tabulation.x**2)
-            else:  # pragma: no cover
-                # There are currently no models in Hz
+            else:  # pragma: no cover - There are currently no models in Hz
                 new_y = ((factor * C_IN_UM_HZ * model_xscale**2) *
                          tabulation.y / tabulation.x**2)
 
     return tab.Tabulation(new_x, new_y)
 
 #===============================================================================
-def bandpass_flux_density(bandpass, model='STIS_Rieke', units='W/m^2/um',
-                                    xunits='um', sun_range=1., solar_f=False):
-    """The solar flux density averaged over a filter bandpass.
+def bandpass_flux_density(bandpass, model='STIS_Rieke', *, units='W/m^2/um',
+                          xunits='um', sun_range=1., solar_f=False):
+    """
+    Compute the average solar flux density over a filter bandpass.
 
-    Input:
-        bandpass        the Tabulation of the filter bandpass, with wavelength
-                        in microns. Alternatively, a tuple of two arrays
-                        (wavelength, flux), each of the same size.
-        model           name of the model, default "STIS_Rieke". Alternatively,
-                        a Tabulation of the solar flux density, in which case it
-                        must be in the desired units already, and must be
-                        tabulated in the same units as the bandpass.
-        units           units to provide, default "W/m^2/um". Options are:
-                        "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
-                        "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz",
-                        "erg/s/cm^2/Hz", "Jy", "uJy". Ignored if the solar model
-                        is a Tabulation.
-        xunits          units for the x-axis of the bandpass, default "um" (for
-                        microns). Options are: "um", "nm", "A", or "Hz".
-        sun_range       optional distance from Sun to target in AU.
-        solar_f         True to divide by pi, providing solar F instead of
-                        solar flux density.
+    Args:
+        bandpass (Tabulation or tuple): The Tabulation of the filter bandpass,
+            with wavelength in units specified by `xunits` (if `model` is a
+            string) or in the same units as `model` (if `model` is a
+            Tabulation). Alternatively, a tuple of two arrays (wavelength,
+            fraction), each of the same size.
+        model (str or Tabulation, optional): Name of the model. Alternatively, a
+            Tabulation of the solar flux density, already in the desired units.
+        units (str, optional): Units for the flux.
+            Options are: "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
+            "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz", "erg/s/cm^2/Hz", "Jy",
+            or "uJy". "u" represents "mu" meaning micro. Ignored if `model` is a
+            Tabulation.
+        xunits (str, optional): Units for the x-axis.
+            Options are: "um", "nm", "A", or "Hz". "u" represents "mu" meaning
+            micro. Ignored if `model` is a Tabulation.
+        sun_range (float, optional): Distance from Sun to target in AU.
+        solar_f (bool, optional): True to divide by pi, providing solar F
+            instead of solar flux density.
 
-    Return:             the mean solar flux density or solar F within the filter
-                        bandpass.
+    Returns:
+        float: The mean solar flux density or solar F within the filter
+        bandpass.
+
+    Note:
+        If the bandpass of the filter is wider than the wavelength coverage of
+        the selected solar model, the computation will be restricted to the
+        wavelength range that is in common between the filter and the model.
     """
 
     if not isinstance(bandpass, tab.Tabulation):
@@ -200,7 +225,7 @@ def bandpass_flux_density(bandpass, model='STIS_Rieke', units='W/m^2/um',
         flux = model * (1./np.pi if solar_f else 1.) / sun_range**2
     else:
         flux = flux_density(model, units=units, xunits=xunits,
-                                   sun_range=sun_range, solar_f=solar_f)
+                            sun_range=sun_range, solar_f=solar_f)
 
     # Multiply together the bandpass and the solar spectrum Tabulations
     product = bandpass * flux
@@ -213,66 +238,76 @@ def bandpass_flux_density(bandpass, model='STIS_Rieke', units='W/m^2/um',
     return product.integral() / bandpass.integral()
 
 #===============================================================================
-def mean_flux_density(center, width, model='STIS_Rieke', units='W/m^2/um',
-                                     xunits='um', sun_range=1., solar_f=False):
-    """The solar flux density averaged over the bandpass of a "boxcar" filter,
-    given its center and full width.
+def mean_flux_density(center, width, model='STIS_Rieke', *, units='W/m^2/um',
+                      xunits='um', sun_range=1., solar_f=False):
+    """
+    Compute average solar flux density over the bandpass of a "boxcar" filter.
 
-    Input:
-        center          the center of the bandpass.
-        width           the full width of the bandpass.
-        model           name of the model, default "STIS_Rieke". Alternatively,
-                        a Tabulation of the solar flux density, in which case it
-                        must be in the desired units already, and must be
-                        tabulated in the same units as the bandpass.
-        units           units to provide, default "W/m^2/um". Options are:
-                        "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
-                        "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz",
-                        "erg/s/cm^2/Hz", "Jy", "microJy", "uJy". Ignored if the
-                        solar model is a Tabulation.
-        xunits          units for bandpass center and width. Options are: "um"
-                        (for microns), "nm", "A", or "Hz". Default is "um".
-        sun_range       optional distance from Sun to target in AU.
-        solar_f         True to divide by pi, providing solar F instead of
-                        solar flux density.
+    Args:
+        center (float): The center of the bandpass (microns).
+        width (float): The full width of the bandpass (microns).
+        model (str or Tabulation, optional): Name of the model. Alternatively, a
+            Tabulation of the solar flux density, already in the desired units.
+        units (str, optional): Units for the flux.
+            Options are: "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
+            "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz", "erg/s/cm^2/Hz", "Jy",
+            or "uJy". "u" represents "mu" meaning micro. Ignored if `model` is a
+            Tabulation.
+        xunits (str, optional): Units for the x-axis.
+            Options are: "um", "nm", "A", or "Hz". "u" represents "mu" meaning
+            micro. Ignored if `model` is a Tabulation.
+        sun_range (float, optional): Distance from Sun to target in AU.
+        solar_f (bool, optional): True to divide by pi, providing solar F
+            instead of solar flux density.
 
-    Return:             the mean solar flux density or solar F within the filter
-                        bandpass.
+    Returns:
+        float: The mean solar flux density or solar F within the filter bandpass.
+
+    Note:
+        If the bandpass of the filter is wider than the wavelength coverage
+        of the selected solar model, the computation will be restricted to the
+        wavelength range that is in common between the filter and the model.
     """
 
     # Create a boxcar filter Tabulation
-    bandpass = tab.Tabulation((center - width/2., center + width/2.), (1.,1.))
+    bandpass = tab.Tabulation((center - width/2., center + width/2.), (1., 1.))
 
     # Return the mean over the filter
     return bandpass_flux_density(bandpass, model=model, units=units,
-                                           xunits=xunits, sun_range=sun_range,
-                                           solar_f=solar_f)
+                                 xunits=xunits, sun_range=sun_range,
+                                 solar_f=solar_f)
 
 #===============================================================================
-def bandpass_f(bandpass, model='STIS_Rieke', units='W/m^2/um', xunits='um',
-                         sun_range=1.):
-    """Solar F averaged over a filter bandpass.
+def bandpass_f(bandpass, model='STIS_Rieke', *, units='W/m^2/um', xunits='um',
+               sun_range=1.):
+    """
+    Compute the solar F averaged over a filter bandpass.
 
-    F is defined such that pi*F is the solar flux density.
+    Args:
+        bandpass (Tabulation or tuple): The Tabulation of the filter bandpass,
+            with wavelength in units specified by `xunits` (if `model` is a
+            string) or in the same units as `model` (if `model` is a
+            Tabulation). Alternatively, a tuple of two arrays (wavelength,
+            fraction), each of the same size.
+        model (str or Tabulation, optional): Name of the model. Alternatively, a
+            Tabulation of the solar flux density, already in the desired units.
+        units (str, optional): Units for the flux.
+            Options are: "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
+            "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz", "erg/s/cm^2/Hz", "Jy",
+            or "uJy". "u" represents "mu" meaning micro. Ignored if `model` is a
+            Tabulation.
+        xunits (str, optional): Units for the x-axis.
+            Options are: "um", "nm", "A", or "Hz". "u" represents "mu" meaning
+            micro. Ignored if `model` is a Tabulation.
+        sun_range (float, optional): Distance from Sun to target in AU.
 
-    Input:
-        bandpass        the Tabulation of the filter bandpass, with wavelength
-                        in microns. Alternatively, a tuple of two arrays
-                        (wavelength, flux), each of the same size.
-        model           name of the model, default "STIS_Rieke". Alternatively,
-                        a Tabulation of the solar flux density, in which case it
-                        must be in the desired units already, and must be
-                        tabulated in the same units as the bandpass.
-        units           units to provide, default "W/m^2/um". Options are:
-                        "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
-                        "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz",
-                        "erg/s/cm^2/Hz", "Jy", "uJy". Ignored if the solar model
-                        is a Tabulation.
-        xunits          units for the x-axis of the bandpass, default "um" (for
-                        microns). Options are: "um", "nm", "A", or "Hz".
-        sun_range       optional distance from Sun to target in AU.
+    Returns:
+        float: The mean solar F within the filter bandpass.
 
-    Return:             the mean solar F within the filter bandpass.
+    Note:
+        If the bandpass of the filter is wider than the wavelength coverage
+        of the selected solar model, the computation will be restricted to the
+        wavelength range that is in common between the filter and the model.
     """
 
     return bandpass_flux_density(bandpass, model=model, units=units,
@@ -280,28 +315,34 @@ def bandpass_f(bandpass, model='STIS_Rieke', units='W/m^2/um', xunits='um',
                                  solar_f=True)
 
 #===============================================================================
-def mean_f(center, width, model='STIS_Rieke', units='W/m^2/um', xunits='um',
-                          sun_range=1.):
-    """The solar F averaged over the bandpass of a "boxcar" filter, given its
-    center and full width.
+def mean_f(center, width, model='STIS_Rieke', *, units='W/m^2/um', xunits='um',
+           sun_range=1.):
+    """
+    Compute average solar F over the bandpass of a "boxcar" filter.
 
-    Input:
-        center          the center of the bandpass.
-        width           the full width of the bandpass.
-        model           name of the model, default "STIS_Rieke". Alternatively,
-                        a Tabulation of the solar flux density, in which case it
-                        must be in the desired units already, and must be
-                        tabulated in the same units as the bandpass.
-        units           units to provide, default "W/m^2/um". Options are:
-                        "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
-                        "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz",
-                        "erg/s/cm^2/Hz", "Jy", "uJy". Ignored if the solar model
-                        is a Tabulation.
-        xunits          units for bandpass center and width. Options are: "um"
-                        (for microns), "nm", "A", or "Hz". Default is "um".
-        sun_range       optional distance from Sun to target in AU.
+    Args:
+        center (float): The center of the bandpass (microns).
+        width (float): The full width of the bandpass (microns).
+        model (str or Tabulation, optional): Name of the model. Alternatively, a
+            Tabulation of the solar flux density, already in the desired units.
+        units (str, optional): Units for the flux.
+            Options are: "W/m^2/um", "W/m^2/nm", "W/m^2/A", "erg/s/cm^2/um",
+            "erg/s/cm^2/nm", "erg/s/cm^2/A", "W/m^2/Hz", "erg/s/cm^2/Hz", "Jy",
+            or "uJy". "u" represents "mu" meaning micro. Ignored if `model` is a
+            Tabulation.
+        xunits (str, optional): Units for the x-axis.
+            Options are: "um", "nm", "A", or "Hz". "u" represents "mu" meaning
+            micro. Ignored if `model` is a Tabulation.
+        sun_range (float, optional): Distance from Sun to target in AU.
 
-    Return:             the mean solar F within the specified bandpass.
+    Returns:
+        float: The mean solar flux density or solar F within the filter
+        bandpass.
+
+    Note:
+        If the bandpass of the filter is wider than the wavelength coverage
+        of the selected solar model, the computation will be restricted to the
+        wavelength range that is in common between the filter and the model.
     """
 
     return mean_flux_density(center, width, model=model, units=units,
