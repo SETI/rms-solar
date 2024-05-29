@@ -32,13 +32,13 @@ FACTOR = 4 * np.pi * (RSUN/solar.AU)**2
 filepath = os.path.join(os.path.split(solar.__file__)[0],
                         'data_files', 'kurucz-fsunallp.2000resam125.txt')
 array = np.fromfile(filepath, sep=' ')
-array = array.reshape(-1,3)
+array = array.reshape(-1, 3)
 
 # column 1 is wavelength in nm
 # column 2 "flux moment"; see notes above for conversion
 
-wavelength = array[:,0]
-flux = array[:,1] * FACTOR
+wavelength = array[:, 0]
+flux = array[:, 1] * FACTOR
 
 FLUX_DENSITY = tab.Tabulation(wavelength, flux)
 UNITS = 'W/m^2/um'
