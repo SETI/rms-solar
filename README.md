@@ -1,6 +1,7 @@
 [![GitHub release; latest by date](https://img.shields.io/github/v/release/SETI/rms-solar)](https://github.com/SETI/rms-solar/releases)
 [![GitHub Release Date](https://img.shields.io/github/release-date/SETI/rms-solar)](https://github.com/SETI/rms-solar/releases)
 [![Test Status](https://img.shields.io/github/actions/workflow/status/SETI/rms-solar/run-tests.yml?branch=main)](https://github.com/SETI/rms-solar/actions)
+[![Documentation Status](https://readthedocs.org/projects/rms-solar/badge/?version=latest)](https://rms-solar.readthedocs.io/en/latest/?badge=latest)
 [![Code coverage](https://img.shields.io/codecov/c/github/SETI/rms-solar/main?logo=codecov)](https://codecov.io/gh/SETI/rms-solar)
 <br />
 [![PyPI - Version](https://img.shields.io/pypi/v/rms-solar)](https://pypi.org/project/rms-solar)
