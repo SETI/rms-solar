@@ -87,28 +87,28 @@ class TestSolar(unittest.TestCase):
         bandpass = tab.Tabulation((0, 1000), (1, 1))
         # Integral of full fake model is 0.16,
         # mean is 0.16 / 0.5 = 0.32
-        bfd = solar.bandpass_flux_density(bandpass, model='fake', solar_f=True)
+        bfd = solar.bandpass_flux_density(bandpass, model='_fake', solar_f=True)
         self.assertAlmostEqual(bfd, 0.32)
 
         # Integral of fake model over [0.18, 0.19] is 0.01,
         # mean is 0.01 / 0.01 = 1
         bandpass = tab.Tabulation((0.18, 0.19), (1, 1))
-        bfd = solar.bandpass_flux_density(bandpass, model='fake', solar_f=True)
+        bfd = solar.bandpass_flux_density(bandpass, model='_fake', solar_f=True)
         self.assertAlmostEqual(bfd, 1)
 
-        bfd = solar.bandpass_flux_density(((0.18, 0.19), (1, 1)), model='fake',
+        bfd = solar.bandpass_flux_density(((0.18, 0.19), (1, 1)), model='_fake',
                                           solar_f=True)
         self.assertAlmostEqual(bfd, 1)
 
-        bfd = solar.bandpass_flux_density(bandpass, model='fake', solar_f=True,
+        bfd = solar.bandpass_flux_density(bandpass, model='_fake', solar_f=True,
                                           units='W/m^2/nm')
         self.assertAlmostEqual(bfd, 1/1000)
 
-        bfd = solar.bandpass_flux_density(bandpass, model='fake', solar_f=True,
+        bfd = solar.bandpass_flux_density(bandpass, model='_fake', solar_f=True,
                                           sun_range=2)
         self.assertAlmostEqual(bfd, 1/4)
 
-        bfd = solar.bandpass_flux_density(((180, 190), (1, 1)), model='fake',
+        bfd = solar.bandpass_flux_density(((180, 190), (1, 1)), model='_fake',
                                           xunits='nm', solar_f=True)
         self.assertAlmostEqual(bfd, 1)
 
@@ -117,7 +117,7 @@ class TestSolar(unittest.TestCase):
         # The smaller bandpass doesn't change the answer, because the
         # BFD is normalized to the bandpass integral
         bandpass = tab.Tabulation((0.58, 0.62), (.5, .5))
-        bfd = solar.bandpass_flux_density(bandpass, model='fake', solar_f=True)
+        bfd = solar.bandpass_flux_density(bandpass, model='_fake', solar_f=True)
         self.assertAlmostEqual(bfd, 1)
 
         bandpass = tab.Tabulation((0.17, 0.19), (1., 1.))
@@ -129,31 +129,31 @@ class TestSolar(unittest.TestCase):
     def test_mean_flux_density(self):
         # Integral of full fake model is 0.16,
         # mean is 0.16 / 0.5 = 0.32
-        mfd = solar.mean_flux_density(500, 1000, model='fake', solar_f=True)
+        mfd = solar.mean_flux_density(500, 1000, model='_fake', solar_f=True)
         self.assertAlmostEqual(mfd, 0.32)
 
         # Integral of fake model over [0.18, 0.19] is 0.01,
         # mean is 0.01 / 0.01 = 1
-        mfd = solar.mean_flux_density(0.185, 0.01, model='fake', solar_f=True)
+        mfd = solar.mean_flux_density(0.185, 0.01, model='_fake', solar_f=True)
         self.assertAlmostEqual(mfd, 1)
 
-        mfd = solar.mean_flux_density(0.185, 0.01, model='fake', solar_f=True,
+        mfd = solar.mean_flux_density(0.185, 0.01, model='_fake', solar_f=True,
                                       units='W/m^2/nm')
         self.assertAlmostEqual(mfd, 1/1000)
 
-        mfd = solar.mean_flux_density(0.185, 0.01, model='fake', solar_f=True,
+        mfd = solar.mean_flux_density(0.185, 0.01, model='_fake', solar_f=True,
                                       sun_range=2)
         self.assertAlmostEqual(mfd, 1/4)
 
-        mfd = solar.mean_flux_density(185, 10, model='fake',
+        mfd = solar.mean_flux_density(185, 10, model='_fake',
                                       xunits='nm', solar_f=True)
         self.assertAlmostEqual(mfd, 1)
 
         # Integral of fake model over [0.58, 0.62] is 0.04,
         # mean is 0.04 / 0.04 = 1
-        mfd = solar.mean_flux_density(0.6, 0.04, model='fake', solar_f=True)
+        mfd = solar.mean_flux_density(0.6, 0.04, model='_fake', solar_f=True)
         self.assertAlmostEqual(mfd, 1)
-        mfd = solar.mean_flux_density(0.6, 0.04, model='fake')
+        mfd = solar.mean_flux_density(0.6, 0.04, model='_fake')
         self.assertAlmostEqual(mfd, np.pi)
 
         model = tab.Tabulation(np.array([0.15, 0.16, 0.17, 0.18, 0.19, 0.20]),
@@ -165,25 +165,25 @@ class TestSolar(unittest.TestCase):
         bandpass = tab.Tabulation((0, 1000), (1, 1))
         # Integral of full fake model is 0.16,
         # mean is 0.16 / 0.5 = 0.32
-        bf = solar.bandpass_f(bandpass, model='fake')
+        bf = solar.bandpass_f(bandpass, model='_fake')
         self.assertAlmostEqual(bf, 0.32)
 
         # Integral of fake model over [0.18, 0.19] is 0.01,
         # mean is 0.01 / 0.01 = 1
         bandpass = tab.Tabulation((0.18, 0.19), (1, 1))
-        bf = solar.bandpass_f(bandpass, model='fake')
+        bf = solar.bandpass_f(bandpass, model='_fake')
         self.assertAlmostEqual(bf, 1)
 
-        bf = solar.bandpass_f(((0.18, 0.19), (1, 1)), model='fake')
+        bf = solar.bandpass_f(((0.18, 0.19), (1, 1)), model='_fake')
         self.assertAlmostEqual(bf, 1)
 
-        bf = solar.bandpass_f(bandpass, model='fake', units='W/m^2/nm')
+        bf = solar.bandpass_f(bandpass, model='_fake', units='W/m^2/nm')
         self.assertAlmostEqual(bf, 1/1000)
 
-        bf = solar.bandpass_f(bandpass, model='fake', sun_range=2)
+        bf = solar.bandpass_f(bandpass, model='_fake', sun_range=2)
         self.assertAlmostEqual(bf, 1/4)
 
-        bf = solar.bandpass_f(((180, 190), (1, 1)), model='fake', xunits='nm')
+        bf = solar.bandpass_f(((180, 190), (1, 1)), model='_fake', xunits='nm')
         self.assertAlmostEqual(bf, 1)
 
         # Integral of fake model over [0.58, 0.62] is 0.04,
@@ -191,7 +191,7 @@ class TestSolar(unittest.TestCase):
         # The smaller bandpass doesn't change the answer, because the
         # bf is normalized to the bandpass integral
         bandpass = tab.Tabulation((0.58, 0.62), (.5, .5))
-        bf = solar.bandpass_f(bandpass, model='fake')
+        bf = solar.bandpass_f(bandpass, model='_fake')
         self.assertAlmostEqual(bf, 1)
 
         bandpass = tab.Tabulation((0.17, 0.19), (1., 1.))
@@ -203,26 +203,26 @@ class TestSolar(unittest.TestCase):
     def test_mean_f(self):
         # Integral of full fake model is 0.16,
         # mean is 0.16 / 0.5 = 0.32
-        mf = solar.mean_f(500, 1000, model='fake')
+        mf = solar.mean_f(500, 1000, model='_fake')
         self.assertAlmostEqual(mf, 0.32)
 
         # Integral of fake model over [0.18, 0.19] is 0.01,
         # mean is 0.01 / 0.01 = 1
-        mf = solar.mean_f(0.185, 0.01, model='fake')
+        mf = solar.mean_f(0.185, 0.01, model='_fake')
         self.assertAlmostEqual(mf, 1)
 
-        mf = solar.mean_f(0.185, 0.01, model='fake', units='W/m^2/nm')
+        mf = solar.mean_f(0.185, 0.01, model='_fake', units='W/m^2/nm')
         self.assertAlmostEqual(mf, 1/1000)
 
-        mf = solar.mean_f(0.185, 0.01, model='fake', sun_range=2)
+        mf = solar.mean_f(0.185, 0.01, model='_fake', sun_range=2)
         self.assertAlmostEqual(mf, 1/4)
 
-        mf = solar.mean_f(185, 10, model='fake', xunits='nm')
+        mf = solar.mean_f(185, 10, model='_fake', xunits='nm')
         self.assertAlmostEqual(mf, 1)
 
         # Integral of fake model over [0.58, 0.62] is 0.04,
         # mean is 0.04 / 0.04 = 1
-        mf = solar.mean_f(0.6, 0.04, model='fake')
+        mf = solar.mean_f(0.6, 0.04, model='_fake')
         self.assertAlmostEqual(mf, 1)
 
         model = tab.Tabulation(np.array([0.15, 0.16, 0.17, 0.18, 0.19, 0.20]),

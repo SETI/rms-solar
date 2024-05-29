@@ -12,8 +12,8 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 project = 'solar'
-copyright = '2024, Mark Showalter'
-author = 'Mark Showalter'
+copyright = '2024, PDS Ring-Moon Systems Node'
+author = 'PDS Ring-Moon Systems Node'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
