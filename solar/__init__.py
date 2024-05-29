@@ -53,14 +53,14 @@ TO_PER_NM = 1.e-3
 # First UNIT_DICT item is conversion factor from W/m^2/um or from W/m^2/Hz.
 # Second item is True if the units are per wavelength, False if per frequency.
 UNIT_DICT = {
-    'W/m^2/um'     : (1.,    True),     # default units
+    'W/m^2/um'     : (1.   , True),     # default units
     'W/m^2/nm'     : (1.e-3, True),
     'W/m^2/A'      : (1.e-4, True),
     'erg/s/cm^2/um': (1.e+3, True),
-    'erg/s/cm^2/nm': (1.,    True),
+    'erg/s/cm^2/nm': (1.   , True),
     'erg/s/cm^2/A' : (1.e-1, True),
 
-    'W/m^2/Hz'     : (1.,    False),
+    'W/m^2/Hz'     : (1.   , False),
     'erg/s/cm^2/Hz': (1.e+3, False),
     'Jy'           : (1.e26, False),
     'uJy'          : (1.e32, False),
@@ -69,10 +69,10 @@ UNIT_DICT = {
 # First XUNIT_DICT item is conversion factor from um or from Hz.
 # Second item is True if the units are wavelength, False if frequency.
 XUNIT_DICT = {
-    'um': (1.,   True),
+    'um': (1.  , True),
     'nm': (1.e3, True),
     'A' : (1.e4, True),
-    'Hz': (1.,   False),
+    'Hz': (1.  , False),
 }
 
 
