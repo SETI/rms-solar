@@ -46,7 +46,7 @@ installed with:
 
 # Getting Started
 
-The `solar` module provides five methods:
+The `solar` module provides five functions:
 
 - `flux_density`: Compute the flux density of a solar model in the specified units.
 - `bandpass_flux_density`: Compute the average solar flux density over a filter bandpass.
@@ -63,13 +63,15 @@ Here is an example that plots the solar flux density for the visual range of 400
 to 700 nm using the Rieke model at 2 AU in units of nm for wavelength and
 W/m^2/nm for flux:
 
-    import matplotlib.pyplot as plt
-    import solar
+```python
+import matplotlib.pyplot as plt
+import solar
 
-    flux = solar.flux_density(model='rieke', xunits='nm', units='W/m^2/nm', solar_range=2)
-    flux = flux.clip(400, 700)
-    plt.plot(flux.x, flux.y)
-    plt.show()
+flux = solar.flux_density(model='rieke', xunits='nm', units='W/m^2/nm', solar_range=2)
+flux = flux.clip(400, 700)
+plt.plot(flux.x, flux.y)
+plt.show()
+```
 
 # Contributing
 
