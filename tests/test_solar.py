@@ -229,11 +229,3 @@ class TestSolar(unittest.TestCase):
                                np.array([1., 2., 3., 4., 5., 6.]))
         mf = solar.mean_f(0.18, 0.02, model=model)
         self.assertAlmostEqual(mf, 4/np.pi)
-
-
-########################################
-
-if __name__ == '__main__':  # pragma: no cover
-    unittest.main(verbosity=2)
-
-################################################################################
