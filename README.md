@@ -42,17 +42,24 @@ models. These models are currently supported:
 The `solar` module is available via the `rms-solar` package on PyPI and can be
 installed with:
 
-    pip install rms-solar
+```sh
+pip install rms-solar
+```
 
 # Getting Started
 
 The `solar` module provides five functions:
 
-- `flux_density`: Compute the flux density of a solar model in the specified units.
-- `bandpass_flux_density`: Compute the average solar flux density over a filter bandpass.
-- `mean_flux_density`: Compute average solar flux density over the bandpass of a "boxcar" filter.
-- `bandpass_f`: Compute the solar F averaged over a filter bandpass.
-- `mean_f`: Compute average solar F over the bandpass of a "boxcar" filter.
+- [`flux_density`](https://rms-solar.readthedocs.io/en/latest/module.html#solar.flux_density):
+  Compute the flux density of a solar model in the specified units.
+- [`bandpass_flux_density`](https://rms-solar.readthedocs.io/en/latest/module.html#solar.bandpass_flux_density):
+  Compute the average solar flux density over a filter bandpass.
+- [`mean_flux_density`](https://rms-solar.readthedocs.io/en/latest/module.html#solar.mean_flux_density):
+  Compute average solar flux density over the bandpass of a "boxcar" filter.
+- [`bandpass_f`](https://rms-solar.readthedocs.io/en/latest/module.html#solar.bandpass_f):
+  Compute the solar F averaged over a filter bandpass.
+- [`mean_f`](https://rms-solar.readthedocs.io/en/latest/module.html#solar.mean_f):
+  Compute average solar F over the bandpass of a "boxcar" filter.
 
 These functions take or return `Tabulation` objects. For more information on `Tabulation`
 objects see the [`rms-tabulation`](https://github.com/SETI/rms-tabulation) package.
