@@ -1,4 +1,5 @@
-"""
+"""PDS Ring-Moon Systems Node, SETI Institute
+
 Models for solar flux density at a given distance from the Sun.
 
 This module provides access to various models of solar flux density. Models
