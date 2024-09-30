@@ -29,9 +29,6 @@ class TestSolar(unittest.TestCase):
                     model0a = model0.subsample(model1.x)
                     model1a = model1.subsample(model0a.x)
 
-                    model0a = model0a.trim()
-                    model1a = model1a.trim()
-
                     (min0, max0) = model0a.domain()
                     (min1, max1) = model1a.domain()
 
